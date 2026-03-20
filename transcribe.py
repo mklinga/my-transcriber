@@ -46,12 +46,21 @@ def main():
         default="float16",
         help="Compute type for inference (default: float16)",
     )
+    parser.add_argument(
+        "--output-dir",
+        default=None,
+        help="Directory for output text files (default: same as input)",
+    )
     args = parser.parse_args()
 
     directory = Path(args.directory).resolve()
     if not directory.is_dir():
         print(f"Error: '{directory}' is not a directory", file=sys.stderr)
         sys.exit(1)
+
+    output_dir = Path(args.output_dir).resolve() if args.output_dir else None
+    if output_dir:
+        output_dir.mkdir(parents=True, exist_ok=True)
 
     ogg_files = sorted(directory.glob("*.ogg"))
     if not ogg_files:
@@ -69,7 +78,10 @@ def main():
 
         text = transcribe_file(model, ogg_file)
 
-        output_path = ogg_file.with_suffix(".txt")
+        if output_dir:
+            output_path = output_dir / ogg_file.with_suffix(".txt").name
+        else:
+            output_path = ogg_file.with_suffix(".txt")
         output_path.write_text(text, encoding="utf-8")
 
         elapsed = time.time() - start

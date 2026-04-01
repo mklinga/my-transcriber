@@ -32,11 +32,25 @@ fi
 # Tag dream files
 "$SCRIPT_DIR/tag_dreams.sh"
 
-# Open results
+# Move results to dream journal
+JOURNAL_ROOT="/home/m/Documents/Markus/Daily"
+
 shopt -s nullglob
 results=("$OUTPUT_DIR"/*.txt)
 shopt -u nullglob
 
-if [ ${#results[@]} -gt 0 ]; then
-    mousepad "${results[@]}" &
-fi
+for f in "${results[@]}"; do
+    basename="$(basename "$f")"
+    if [[ "$basename" =~ ^([0-9]{4})-([0-9]{2})-([0-9]{2}) ]]; then
+        year="${BASH_REMATCH[1]}"
+        month="${BASH_REMATCH[2]}"
+        day="${BASH_REMATCH[3]}"
+        dest="$JOURNAL_ROOT/$year/$month/$day"
+        mkdir -p "$dest"
+        md_name="Uni ${basename%.txt}.md"
+        mv "$f" "$dest/$md_name"
+        echo "Moved $basename -> $dest/$md_name"
+    else
+        echo "WARNING: Could not parse date from $basename, skipping"
+    fi
+done

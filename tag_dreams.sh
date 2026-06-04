@@ -39,9 +39,36 @@ timestamp: ${timestamp}
 ---
 
 "
+
+        topics="
+
+---
+
+**Key symbols and spontaneous associations**
+
+
+**Personal context**
+
+
+**Inner dynamics of a dream**
+
+*Beginning (introduction of the settings and characters)*
+
+
+*The middle part (drama and tensions)*
+
+
+*The ending (possible resolution)*
+
+
+**Interpretation**
+
+"
+
         tmp="$(mktemp)"
         printf '%s' "$frontmatter" > "$tmp"
         cat "$file" >> "$tmp"
+        printf '%s' "$topics" >> "$tmp"
         mv "$tmp" "$file"
 
         echo "Tagged: $(basename "$file") -> $timestamp"
